@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contagem Regressiva - Harry Potter</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: radial-gradient(circle at top center, #382c1b 0%, #150f08 60%, #0a0704 100%);
+            color: #fbdc8a;
+            font-family: 'Cinzel', 'Georgia', serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            min-height: 100vh;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .container {
+            text-align: center;
+            padding: 40px 20px;
+            max-width: 800px;
+            width: 100%;
+            box-sizing: border-box;
+            z-index: 10;
+        }
+
+        .teaser-image {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            box-shadow: 0 10px 50px rgba(251, 220, 138, 0.05);
+            margin-bottom: 24px;
+        }
+
+        .countdown-container {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .countdown-box {
+            background: linear-gradient(135deg, rgba(35, 27, 18, 0.85), rgba(18, 14, 9, 0.95));
+            border: 1px solid rgba(194, 167, 109, 0.4);
+            border-radius: 8px;
+            padding: 18px;
+            min-width: 95px;
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .countdown-number {
+            font-size: 2.8rem;
+            font-weight: bold;
+            color: #fbdc8a;
+            display: block;
+            line-height: 1;
+            margin-bottom: 6px;
+            text-shadow: 0 0 12px rgba(251, 220, 138, 0.35);
+        }
+
+        .countdown-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: #c2a76d;
+            display: block;
+        }
+
+        /* --- Pomo de Ouro com rastro de purpurina --- */
+        .snitch {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            background: #fbdc8a;
+            border-radius: 50%;
+            box-shadow: 
+                0 0 15px #fbdc8a, 
+                0 0 30px #fbdc8a,
+                -8px 4px 12px rgba(251, 220, 138, 0.75),
+                -16px 8px 16px rgba(251, 220, 138, 0.5),
+                -24px 12px 20px rgba(251, 220, 138, 0.25);
+            z-index: 9999;
+            pointer-events: none;
+            top: -50px;
+            left: -50px;
+        }
+
+        /* --- Neve Natalina --- */
+        .snow-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 5;
+            pointer-events: none;
+        }
+
+        .snowflake {
+            position: absolute;
+            color: #ffffff;
+            font-family: Arial, sans-serif;
+            user-select: none;
+            top: -20px;
+            animation: fall linear infinite;
+        }
+
+        @keyframes fall {
+            0% {
+                top: -20px;
+                transform: translateX(0px);
+                opacity: 0;
+            }
+            10% { opacity: 0.4; }
+            90% { opacity: 0.4; }
+            100% {
+                top: 105vh;
+                transform: translateX(30px);
+                opacity: 0;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .container { padding: 20px 10px; }
+            .countdown-number { font-size: 2.2rem; }
+            .countdown-box { min-width: 72px; padding: 14px 6px; }
+            .countdown-container { gap: 8px; }
+        }
+    </style>
+    <link href="https://googleapis.com" rel="stylesheet">
+</head>
+<body>
+
+    <div class="snitch" id="snitch"></div>
+    <div class="snow-container" id="snowContainer"></div>
+
+    <div class="container">
+        <img class="teaser-image" src="hogwarts.jpg" alt="Harry Potter Max Original">
+        
+        <div class="countdown-container">
+            <div class="countdown-box">
+                <span class="countdown-number" id="days">00</span>
+                <span class="countdown-label">Dias</span>
+            </div>
+            <div class="countdown-box">
+                <span class="countdown-number" id="hours">00</span>
+                <span class="countdown-label">Horas</span>
+            </div>
+            <div class="countdown-box">
+                <span class="countdown-number" id="minutes">00</span>
+                <span class="countdown-label">Minutos</span>
+            </div>
+            <div class="countdown-box">
+                <span class="countdown-number" id="seconds">00</span>
+                <span class="countdown-label">Segundos</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 1. MOTOR DO RELÓGIO (102 Dias Calculados)
+        (function() {
+            const targetDate = new Date("December 25, 2026 00:00:00").getTime();
+            function updateClock() {
+                const now = new Date().getTime();
+                const diff = targetDate - now;
+                if (diff > 0) {
+                    const d = Math.floor(diff / (1000 * 60 * 60 * 24));
+                    const h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                    const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                    const s = Math.floor((diff % (1000 * 60)) / 1000);
+                    document.getElementById("days").innerText = d < 10 ? "0" + d : d;
+                    document.getElementById("hours").innerText = h < 10 ? "0" + h : h;
+                    document.getElementById("minutes").innerText = m < 10 ? "0" + m : m;
+                    document.getElementById("seconds").innerText = s < 10 ? "0" + s : s;
+                }
+            }
+            updateClock();
+            setInterval(updateClock, 1000);
+        })();
+
+        // 2. CONSTRUTOR DA NEVE NATALINA
+        (function() {
+            const snowContainer = document.getElementById('snowContainer');
+            const snowflakeChars = ['❄', '•', '✧'];
+            const totalFlakes = 35;
+
+            for (let i = 0; i < totalFlakes; i++) {
+                const flake = document.createElement('div');
+                flake.className = 'snowflake';
+                flake.innerText = snowflakeChars[Math.floor(Math.random() * snowflakeChars.length)];
+                
+                flake.style.left = Math.random() * 100 + 'vw';
+                flake.style.fontSize = (Math.random() * 10 + 6) + 'px';
+                flake.style.animationDuration = (Math.random() * 4 + 4) + 's';
+                flake.style.animationDelay = (Math.random() * 6) + 's';
+                
+                snowContainer.appendChild(flake);
+            }
+        })();
+
+        // 3. CURVAS DE BÉZIER COM PAUSA DE 3 A 4 SEGUNDOS
+        (function() {
+            const snitch = document.getElementById('snitch');
+            let t = 1; 
+            let p0, p1, p2, p3;
+            let timer = 0;
+            let currentDelay = 180;
+
+            function getBezierPoint(p0, p1, p2, p3, t) {
+                const cx = 3 * (p1.x - p0.x);
+                const bx = 3 * (p2.x - p1.x) - cx;
+                const ax = p3.x - p0.x - cx - bx;
+                const cy = 3 * (p1.y - p0.y);
+                const by = 3 * (p2.y - p1.y) - cy;
+                const ay = p3.y - p0.y - cy - by;
+                return {
+                    x: (ax * Math.pow(t, 3)) + (bx * Math.pow(t, 2)) + (cx * t) + p0.x,
+                    y: (ay * Math.pow(t, 3)) + (by * Math.pow(t, 2)) + (cy * t) + p0.y
+                };
+            }
+
+            function generateNewRoute() {
+                const w = window.innerWidth;
+                const h = window.innerHeight;
+                
+                const borders = [
+                    { x: -60, y: Math.random() * h },
+                    { x: w + 60, y: Math.random() * h },
+                    { x: Math.random() * w, y: -60 },
+                    { x: Math.random() * w, y: h + 60 }
+                ];
+
+                const startIdx = Math.floor(Math.random() * borders.length);
+                let endIdx = Math.floor(Math.random() * borders.length);
+                while (endIdx === startIdx) {
+                    endIdx = Math.floor(Math.random() * borders.length);
+                }
+
+                p0 = borders[startIdx];
+                p3 = borders[endIdx];
+
+                p1 = { x: Math.random() * (w * 0.7) + (w * 0.15), y: Math.random() * (h * 0.7) + (h * 0.15) };
+                p2 = { x: Math.random() * (w * 0.7) + (w * 0.15), y: Math.random() * (h * 0.7) + (h * 0.15) };
+                
+                t = 0;
+                currentDelay = Math.floor(Math.random() * 60) + 180;
+            }
+
+            setInterval(function() {
+                if (t >= 1) {
+                    timer++;
+                    if (timer > currentDelay) { 
+                        generateNewRoute();
+                        timer = 0;
+                    }
+                    return;
+                }
+
+                t += 0.038;
+
+                const pos = getBezierPoint(p0, p1, p2, p3, t);
+                snitch.style.left = pos.x + 'px';
+                snitch.style.top = pos.y + 'px';
+            }, 16);
+        })();
+    </script>
+</body>
+</html>
+
